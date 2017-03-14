@@ -10152,15 +10152,21 @@ wysihtml5.Commands = Base.extend(
      *    wysihtml5.commands.createLink.exec(composer, "createLink", { href: "http://www.google.de", target: "_blank" });
      */
     exec: function(composer, command, value) {
+      // convert relative links to absolute
+      if ( value && value.href[0] == '/') {
+           value.href = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '') + value.href;
+      }
+
       var anchors = this.state(composer, command);
       if (anchors) {
+        console.log('if anchors');
         // Selection contains links then change attributes of these links
         composer.selection.executeAndRestore(function() {
           _changeLinks(composer, anchors, value);
         });
       } else {
         // Create links
-        value = typeof(value) === "object" ? value : { href: value };
+         value = typeof(value) === "object" ? $.extend(value, { target: '_blank' }) : { href: value, target: '_blank' };
         _format(composer, value);
       }
     },
