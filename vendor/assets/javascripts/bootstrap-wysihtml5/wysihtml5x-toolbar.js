@@ -6369,15 +6369,19 @@ wysihtml5.dom.parse = (function() {
   // ------------ attribute checks ------------ \\
   var attributeCheckMethods = {
     url: (function() {
-      var REG_EXP = /^https?:\/\//i;
-      return function(attributeValue) {
-        if (!attributeValue || !attributeValue.match(REG_EXP)) {
-          return null;
-        }
-        return attributeValue.replace(REG_EXP, function(match) {
-          return match.toLowerCase();
-        });
-      };
+        return function(attributeValue) {
+            if (!attributeValue) {
+                return "";
+            }
+
+            var parser = document.createElement('a');
+            parser.href = attributeValue;
+
+            if (   parser.protocol == 'http:'
+                || parser.protocol == 'https:'
+                || parser.protocol == 'ftp:'
+            ) return attributeValue;
+        };
     })(),
 
     src: (function() {
